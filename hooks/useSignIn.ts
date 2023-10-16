@@ -1,0 +1,40 @@
+import { useState, useEffect } from 'react'
+import { useDispatch } from 'react-redux'
+import { clientInstance } from '@/lib/axios'
+import { setSession } from '@/context/session/sessionSlice'
+
+export default function useSignIn() {
+  const [error, setError] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const dispatch = useDispatch()
+
+  const signIn = async (
+    email: string,
+    password: string,
+    rememberMe: boolean
+  ) => {
+    setLoading(true)
+    const { data, status } = await clientInstance.post(
+      '/auth/sign-in',
+      JSON.stringify({
+        email,
+        password,
+        rememberMe,
+      })
+    )
+
+    if (status === 401) {
+      setError(true)
+      setLoading(false)
+    } else {
+      dispatch(setSession({ user: data.user, accessToken: data.accessToken }))
+      setSuccess(true)
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {}, [error, loading, success])
+
+  return { error, loading, success, signIn }
+}
