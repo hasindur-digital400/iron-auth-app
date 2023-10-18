@@ -13,12 +13,12 @@ export interface UserState {
 
 export interface SessionState {
   user: User
-  accessToken: string
+  // accessToken: string
 }
 
 const initialState: SessionState = {
   user: { id: undefined, name: '', email: '', role: '', avatar: '' },
-  accessToken: '',
+  // accessToken: '',
 }
 
 export const userSlice = createSlice({
@@ -26,8 +26,9 @@ export const userSlice = createSlice({
   initialState,
   reducers: {
     setSession: (state, action: PayloadAction<SessionState>) => {
+      console.log('setSession:', action.payload.user)
       state.user = action.payload.user
-      state.accessToken = action.payload.accessToken
+      // state.accessToken = action.payload.accessToken
     },
     deleteSession: () => ({ ...initialState }),
   },
