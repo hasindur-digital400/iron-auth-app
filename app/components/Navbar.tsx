@@ -1,30 +1,20 @@
 'use client'
 
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useDispatch } from 'react-redux'
 import useSession from '@/hooks/useSession'
+import useSignOut from '@/hooks/useSignOut'
 import { clientInstance } from '@/lib/axios'
-import { deleteSession } from '@/context/session/sessionSlice'
 
 type Props = {}
 
 export default function Navbar({}: Props) {
   const session = useSession()
-  const dispatch = useDispatch()
-  const router = useRouter()
+  const handleSignOut = useSignOut()
 
-  const handleSignOut = async () => {
-    const { status } = await clientInstance.post('/auth/sign-out')
-
-    if (status === 201) {
-      dispatch(deleteSession())
-      router.push('/')
-    }
-  }
+  console.log('session:', session)
 
   const refresh = async () => {
-    await clientInstance.post('/auth/refresh')
+    await clientInstance.get('/auth/sign-in')
   }
 
   return (
