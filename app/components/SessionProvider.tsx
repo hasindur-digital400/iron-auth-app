@@ -1,10 +1,7 @@
 'use client'
 import { ReactNode, useEffect } from 'react'
-import { Provider } from 'react-redux'
-
-import { store } from '@/context/store'
+import secureLocalStorage from 'react-secure-storage'
 import { useDispatch } from 'react-redux'
-import { clientInstance } from '@/lib/axios'
 import { setSession } from '@/context/session/sessionSlice'
 
 type Props = {
@@ -14,17 +11,23 @@ type Props = {
 export default function SessionProvider({ children }: Props) {
   const dispatch = useDispatch()
 
-  // Get session (user details and accessToken) again if cookie is available. Useful when RTK session is lost due to page reload
+  // Get session (user details) again from encrypted localStorage value.
+  // Useful when RTK session is lost due to page reload
   useEffect(() => {
-    const fetchSession = async () => {
-      const { data, status } = await clientInstance.get('/auth/sign-in')
+    const rememberMe = localStorage.getItem('rememberMe') || false
 
-      if (status === 201)
-        dispatch(setSession({ user: data.user, accessToken: data.accessToken }))
+    let user
+
+    if (rememberMe) {
+      user = JSON.parse(localStorage.getItem('user') as string) as User
+    } else {
+      user = JSON.parse(sessionStorage.getItem('user') as string) as User
     }
+    console.log(user)
 
-    fetchSession()
-  }, [dispatch])
+    if (user) dispatch(setSession({ user }))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
-  return <Provider store={store}>{children}</Provider>
+  return <>{children}</>
 }
