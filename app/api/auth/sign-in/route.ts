@@ -1,42 +1,28 @@
-import { sealData, unsealData } from 'iron-session'
+import { sealData } from 'iron-session'
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { serverInstance } from '@/lib/axios'
+import { getUserData } from '@/app/api/profile/route'
 
-async function getUserData(accessToken: string) {
-  const { data: userData, status: userStatus } = await serverInstance.get(
-    '/auth/profile',
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
-  )
+// This was used for getting session on browser reload/refresh
+// export async function GET(req: Request) {
+//   const cookieStore = cookies()
+//   const session = cookieStore.get('iron_session_cookie')?.value
 
-  if (userStatus === 200) {
-    const { id, name, email, role, avatar } = userData
-    return { id, name, email, role, avatar }
-  }
-}
+//   if (session) {
+//     const unsealedData = await unsealData(session, {
+//       password: process.env.SECRET_COOKIE_PASSWORD as string,
+//     })
 
-export async function GET(req: Request) {
-  const cookieStore = cookies()
-  const session = cookieStore.get('iron_session_cookie')?.value
+//     const accessToken = unsealedData.access_token as string
 
-  if (session) {
-    const unsealedData = await unsealData(session, {
-      password: process.env.SECRET_COOKIE_PASSWORD as string,
-    })
+//     const user = await getUserData(accessToken)
 
-    const accessToken = unsealedData.access_token as string
+//     return NextResponse.json({ user, accessToken }, { status: 201 })
+//   }
 
-    const user = await getUserData(accessToken)
-
-    return NextResponse.json({ user, accessToken }, { status: 201 })
-  }
-
-  return NextResponse.json({ message: 'No session cookie' }, { status: 400 })
-}
+//   return NextResponse.json({ message: 'No session cookie' }, { status: 400 })
+// }
 
 export async function POST(req: Request) {
   const { email, password, rememberMe } = await req.json()
@@ -71,10 +57,7 @@ export async function POST(req: Request) {
 
     const user = await getUserData(data.access_token)
 
-    return NextResponse.json(
-      { user, accessToken: data.access_token },
-      { status: 201 }
-    )
+    return NextResponse.json({ user, rememberMe }, { status: 201 })
   }
 
   return NextResponse.json(
