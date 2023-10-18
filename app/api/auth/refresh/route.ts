@@ -40,10 +40,7 @@ export async function POST(req: Request) {
         maxAge,
       })
 
-      return NextResponse.json(
-        { accessToken: data.access_token },
-        { status: 201 }
-      )
+      return NextResponse.json({ message: 'Tokens refreshed' }, { status: 201 })
     }
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
   }
