@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { serverInstance } from '@/lib/axios'
+import { clientInstance } from '@/lib/axios'
 import useSession from '@/hooks/useSession'
 
 type Props = {}
@@ -11,9 +11,7 @@ export default function User({}: Props) {
   const session = useSession()
 
   const retrieveUserData = async () => {
-    const { data, status } = await serverInstance.get('/auth/profile', {
-      headers: { Authorization: `Bearer ${session.accessToken}` },
-    })
+    const { data, status } = await clientInstance.get('/profile')
 
     if (status === 200) {
       setUserData(data)
