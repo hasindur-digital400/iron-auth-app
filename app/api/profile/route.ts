@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { unsealData } from 'iron-session'
 import { serverInstance } from '@/lib/axios'
+import unsealCookie from '@/lib/unsealCookie'
 
 export async function getUserData(accessToken: string) {
   const { data: userData, status: userStatus } = await serverInstance.get(
@@ -24,9 +25,7 @@ export async function GET(req: Request) {
   const session = cookieStore.get('iron_session_cookie')?.value
 
   if (session) {
-    const unsealedData = await unsealData(session, {
-      password: process.env.SECRET_COOKIE_PASSWORD as string,
-    })
+    const unsealedData = await unsealCookie(session)
 
     const user = await getUserData(unsealedData.access_token as string)
 

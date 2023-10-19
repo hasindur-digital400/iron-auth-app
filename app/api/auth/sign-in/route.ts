@@ -1,8 +1,8 @@
-import { sealData } from 'iron-session'
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { serverInstance } from '@/lib/axios'
 import { getUserData } from '@/app/api/profile/route'
+import sealCookie from '@/lib/sealCookie'
 
 // This was used for getting session on browser reload/refresh
 // export async function GET(req: Request) {
@@ -26,6 +26,7 @@ import { getUserData } from '@/app/api/profile/route'
 
 export async function POST(req: Request) {
   const { email, password, rememberMe } = await req.json()
+  console.log(rememberMe)
 
   const { data, status } = await serverInstance.post(
     '/auth/login',
@@ -36,12 +37,7 @@ export async function POST(req: Request) {
   )
 
   if (status === 201) {
-    const sealedSession = await sealData(
-      { ...data, remember_me: rememberMe },
-      {
-        password: process.env.SECRET_COOKIE_PASSWORD as string,
-      }
-    )
+    const sealedSession = await sealCookie({ ...data, remember_me: rememberMe })
 
     const maxAge = rememberMe ? 60 * 60 * 24 * 20 : undefined
 

@@ -1,7 +1,8 @@
-import { serverInstance } from '@/lib/axios'
-import { sealData, unsealData } from 'iron-session'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
+import { serverInstance } from '@/lib/axios'
+import sealCookie from '@/lib/sealCookie'
+import unsealCookie from '@/lib/unsealCookie'
 
 export async function POST(req: Request) {
   const cookieStore = cookies()
@@ -9,9 +10,7 @@ export async function POST(req: Request) {
   let unsealedData
 
   if (session) {
-    unsealedData = await unsealData(session, {
-      password: process.env.SECRET_COOKIE_PASSWORD as string,
-    })
+    unsealedData = await unsealCookie(session)
     const refreshToken = unsealedData.refresh_token as string
     const rememberMe = unsealedData.remember_me as string
 
@@ -23,12 +22,10 @@ export async function POST(req: Request) {
     )
 
     if (status === 201) {
-      const sealedSession = await sealData(
-        { ...data, remember_me: rememberMe },
-        {
-          password: process.env.SECRET_COOKIE_PASSWORD as string,
-        }
-      )
+      const sealedSession = await sealCookie({
+        ...data,
+        remember_me: rememberMe,
+      })
 
       const maxAge = rememberMe ? 60 * 60 * 24 * 20 : undefined
 
