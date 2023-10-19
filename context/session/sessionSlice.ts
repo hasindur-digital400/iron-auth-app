@@ -26,7 +26,6 @@ export const userSlice = createSlice({
   initialState,
   reducers: {
     setSession: (state, action: PayloadAction<SessionState>) => {
-      console.log('setSession:', action.payload.user)
       state.user = action.payload.user
       // state.accessToken = action.payload.accessToken
     },
