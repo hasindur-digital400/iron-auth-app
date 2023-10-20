@@ -16,16 +16,14 @@ export default function SessionProvider({ children }: Props) {
   useEffect(() => {
     const rememberMe = localStorage.getItem('rememberMe') || false
 
-    let user
+    const storedData = rememberMe
+      ? localStorage.getItem('user')
+      : sessionStorage.getItem('user')
 
-    if (rememberMe) {
-      user = JSON.parse(localStorage.getItem('user') as string) as User
-    } else {
-      user = JSON.parse(sessionStorage.getItem('user') as string) as User
+    if (storedData && storedData !== 'undefined') {
+      const user = JSON.parse(storedData) as User
+      dispatch(setSession({ user }))
     }
-    console.log(user)
-
-    if (user) dispatch(setSession({ user }))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
