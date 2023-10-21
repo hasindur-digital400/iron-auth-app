@@ -1,32 +1,10 @@
 import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
-import { serverInstance } from '@/lib/axios'
+import serverInstance from '@/lib/axios/serverInstance'
 import { getUserData } from '@/app/api/profile/route'
-import sealCookie from '@/lib/sealCookie'
-
-// This was used for getting session on browser reload/refresh
-// export async function GET(req: Request) {
-//   const cookieStore = cookies()
-//   const session = cookieStore.get('iron_session_cookie')?.value
-
-//   if (session) {
-//     const unsealedData = await unsealData(session, {
-//       password: process.env.SECRET_COOKIE_PASSWORD as string,
-//     })
-
-//     const accessToken = unsealedData.access_token as string
-
-//     const user = await getUserData(accessToken)
-
-//     return NextResponse.json({ user, accessToken }, { status: 201 })
-//   }
-
-//   return NextResponse.json({ message: 'No session cookie' }, { status: 400 })
-// }
+import setSessionCookie from '@/lib/session/setSessionCookie'
 
 export async function POST(req: Request) {
   const { email, password, rememberMe } = await req.json()
-  console.log(rememberMe)
 
   const { data, status } = await serverInstance.post(
     '/auth/login',
@@ -37,23 +15,13 @@ export async function POST(req: Request) {
   )
 
   if (status === 201) {
-    const sealedSession = await sealCookie({ ...data, remember_me: rememberMe })
+    await setSessionCookie({ ...data, remember_me: rememberMe })
 
-    const maxAge = rememberMe ? 60 * 60 * 24 * 20 : undefined
+    const { user, status: userStatus } = await getUserData()
 
-    const cookieStore = cookies()
-
-    cookieStore.set({
-      name: 'iron_session_cookie',
-      value: sealedSession,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      maxAge,
-    })
-
-    const user = await getUserData(data.access_token)
-
-    return NextResponse.json({ user, rememberMe }, { status: 201 })
+    return userStatus === 200
+      ? NextResponse.json({ user, rememberMe }, { status: 201 })
+      : NextResponse.json({}, { status: userStatus })
   }
 
   return NextResponse.json(
