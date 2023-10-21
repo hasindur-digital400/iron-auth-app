@@ -20,7 +20,16 @@ export default function SessionProvider({ children }: Props) {
       ? localStorage.getItem('user')
       : sessionStorage.getItem('user')
 
-    if (storedData && storedData !== 'undefined') {
+    const isJSONString = (str: string) => {
+      try {
+        const obj = JSON.parse(str)
+        return typeof obj === 'object' && obj !== null
+      } catch (e) {
+        return false
+      }
+    }
+
+    if (storedData && isJSONString(storedData)) {
       const user = JSON.parse(storedData) as User
       dispatch(setSession({ user }))
     }
