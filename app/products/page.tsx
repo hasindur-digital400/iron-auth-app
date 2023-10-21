@@ -1,4 +1,4 @@
-import serverInstance from '@/lib/axios/clientInstance'
+import serverInstance from '@/lib/axios/serverInstance'
 
 type Props = {}
 
@@ -16,7 +16,7 @@ interface ProductInterface {
 }
 
 export default async function Products({}: Props) {
-  const { data: products } = await serverInstance.get('/products')
+  const { data: products, status } = await serverInstance.get('/products')
 
   return (
     <div>
@@ -25,7 +25,7 @@ export default async function Products({}: Props) {
       <p className='text-xl font-semibold my-5'>
         Number of products: {products.length}
       </p>
-      {products.length && (
+      {status === 200 && (
         <ul>
           {products.map((product: ProductInterface) => (
             <li key={product.id} className='w-full py-2 shadow'>

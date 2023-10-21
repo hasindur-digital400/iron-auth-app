@@ -2,13 +2,11 @@
 
 import React, { useState } from 'react'
 import clientInstance from '@/lib/axios/clientInstance'
-import useSession from '@/hooks/useSession'
 
 type Props = {}
 
 export default function User({}: Props) {
   const [userData, setUserData] = useState('')
-  const session = useSession()
 
   const retrieveUserData = async () => {
     const { data, status } = await clientInstance.get('/profile')

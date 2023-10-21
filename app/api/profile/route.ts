@@ -1,43 +1,22 @@
 import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
-import { unsealData } from 'iron-session'
-import { serverInstance } from '@/lib/axios'
-import unsealCookie from '@/lib/unsealCookie'
+import serverInstance from '@/lib/axios/serverInstance'
+export async function getUserData() {
+  const { data, status } = await serverInstance.get('/auth/profile')
 
-export async function getUserData(accessToken: string) {
-  const { data: userData, status: userStatus } = await serverInstance.get(
-    '/auth/profile',
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
-  )
-
-  if (userStatus === 200) {
-    const { id, name, email, role, avatar } = userData
-    return { id, name, email, role, avatar }
+  if (status === 200) {
+    const { id, name, email, role, avatar } = data
+    return { user: { id, name, email, role, avatar }, status }
+  } else {
+    return { user: null, status }
   }
 }
 
 export async function GET(req: Request) {
-  const cookieStore = cookies()
-  const session = cookieStore.get('iron_session_cookie')?.value
+  const { user, status } = await getUserData()
 
-  if (session) {
-    const unsealedData = await unsealCookie(session)
-
-    const user = await getUserData(unsealedData.access_token as string)
-
-    if (user) {
-      return NextResponse.json(user, { status: 200 })
-    } else {
-      return NextResponse.json(
-        { message: 'Error in data server' },
-        { status: 404 }
-      )
-    }
+  if (user) {
+    return NextResponse.json(user, { status: 200 })
+  } else {
+    return NextResponse.json({ message: 'Error in data server' }, { status })
   }
-
-  return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
 }
