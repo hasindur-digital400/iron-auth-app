@@ -11,18 +11,6 @@ const instance = axios.create({
   headers: { 'Content-Type': 'application/json' },
 })
 
-// const refreshAuthLogic = async (failedRequest: any) => {
-//   const { refresh_token, remember_me } = await getSessionCookie()
-//   return axios
-//     .post(SERVER_BASE_URL + '/auth/refresh-token')
-//     .then((tokenRefreshResponse) => {
-//       localStorage.setItem('token', tokenRefreshResponse.data.token)
-//       failedRequest.response.config.headers['Authorization'] =
-//         'Bearer ' + tokenRefreshResponse.data.token
-//       return Promise.resolve()
-//     })
-// }
-
 instance.interceptors.request.use(async (config) => {
   const session = await getSessionCookie()
 
@@ -55,8 +43,6 @@ instance.interceptors.response.use(
           )
 
           if (status === 201) {
-            console.log('interceptor:', data)
-
             await setSessionCookie({
               ...data,
               remember_me: session?.remember_me,

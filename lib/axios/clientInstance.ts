@@ -14,7 +14,6 @@ instance.interceptors.response.use(
     return response
   },
   (error) => {
-    console.log(error.config)
     return error?.response
   }
 )
