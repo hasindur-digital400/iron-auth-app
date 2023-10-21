@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import useSession from '@/hooks/useSession'
 import useSignOut from '@/hooks/useSignOut'
-import { clientInstance } from '@/lib/axios'
+import clientInstance from '@/lib/axios/clientInstance'
 
 type Props = {}
 
@@ -11,7 +11,7 @@ export default function Navbar({}: Props) {
   const session = useSession()
   const handleSignOut = useSignOut()
 
-  console.log('session:', session)
+  // console.log('session:', session)
 
   const refresh = async () => {
     await clientInstance.get('/auth/sign-in')

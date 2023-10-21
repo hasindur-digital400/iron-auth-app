@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 // import secureLocalStorage from 'react-secure-storage'
-import { clientInstance } from '@/lib/axios'
+import clientInstance from '@/lib/axios/clientInstance'
 import { setSession } from '@/context/session/sessionSlice'
 
 export default function useSignIn() {
@@ -25,10 +25,9 @@ export default function useSignIn() {
       })
     )
 
-    if (status === 401) {
-      setError(true)
-      setLoading(false)
-    } else {
+    // console.log('signin status: ' + status)
+
+    if (status === 201) {
       dispatch(setSession({ user: data.user }))
 
       if (data.rememberMe) {
@@ -38,6 +37,9 @@ export default function useSignIn() {
         sessionStorage.setItem('user', JSON.stringify(data.user))
       }
       setSuccess(true)
+      setLoading(false)
+    } else {
+      setError(true)
       setLoading(false)
     }
   }

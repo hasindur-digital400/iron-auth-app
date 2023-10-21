@@ -1,4 +1,4 @@
-import { serverInstance } from '@/lib/axios'
+import serverInstance from '@/lib/axios/clientInstance'
 import { unsealData } from 'iron-session'
 import { cookies } from 'next/headers'
 
@@ -15,6 +15,7 @@ export default async function User({}: Props) {
       password: process.env.SECRET_COOKIE_PASSWORD as string,
     })
     const accessToken = unsealedData.access_token as string
+    // console.log(accessToken)
 
     const { data, status } = await serverInstance.get('/auth/profile', {
       headers: {

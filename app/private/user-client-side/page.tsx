@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { clientInstance } from '@/lib/axios'
+import clientInstance from '@/lib/axios/clientInstance'
 import useSession from '@/hooks/useSession'
 
 type Props = {}

@@ -1,4 +1,4 @@
-import { serverInstance } from '@/lib/axios'
+import serverInstance from '@/lib/axios/clientInstance'
 
 type Props = {}
 
