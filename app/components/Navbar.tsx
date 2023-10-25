@@ -3,17 +3,12 @@
 import Link from 'next/link'
 import useSession from '@/hooks/useSession'
 import useSignOut from '@/hooks/useSignOut'
-import clientInstance from '@/lib/axios/clientInstance'
 
 type Props = {}
 
 export default function Navbar({}: Props) {
   const session = useSession()
   const handleSignOut = useSignOut()
-
-  const refresh = async () => {
-    await clientInstance.get('/auth/sign-in')
-  }
 
   return (
     <nav className='flex justify-between items-center w-full py-10 px-5 bg-slate-400'>
@@ -39,10 +34,6 @@ export default function Navbar({}: Props) {
           >
             {session.user.name} - SSR
           </Link>
-
-          <button className='p-2 rounded-sm border' onClick={refresh}>
-            Refresh
-          </button>
 
           <button className='p-2 rounded-sm border' onClick={handleSignOut}>
             Sign Out
