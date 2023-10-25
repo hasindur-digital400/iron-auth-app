@@ -11,8 +11,6 @@ export default function Navbar({}: Props) {
   const session = useSession()
   const handleSignOut = useSignOut()
 
-  // console.log('session:', session)
-
   const refresh = async () => {
     await clientInstance.get('/auth/sign-in')
   }

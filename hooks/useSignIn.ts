@@ -25,8 +25,6 @@ export default function useSignIn() {
       })
     )
 
-    // console.log('signin status: ' + status)
-
     if (status === 201) {
       dispatch(setSession({ user: data.user }))
 
